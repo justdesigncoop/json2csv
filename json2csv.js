@@ -5,13 +5,13 @@ csvConverter = csvConverter || {};
 (function() {
   "use strict";
   return csvConverter = {
-    convert: function (objArray) {
+    convert: function (objArray, fileName = "download.csv") {
       var array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
       //Assume that the headers of the document are equal to the keys in the JSON object. 
       var headers = Object.keys(array[0]);
       var stringWithHeaders = this.parseHeaders(headers, array);
       var parsedString = this.parseBody(array, stringWithHeaders);
-      return this.open(parsedString);
+      return this.open(parsedString, fileName);
     },
 
     parseHeaders: function(headers) {
@@ -47,7 +47,7 @@ csvConverter = csvConverter || {};
       return str;
     },
 
-    open: function(csvString) {
+    open: function(csvString, fileName) {
       if (Object.hasOwnProperty.call(window, "ActiveXObject") && !window.ActiveXObject) 
       {  // Determine if client is IE11
         var blob = new Blob([csvString], {
@@ -59,10 +59,10 @@ csvConverter = csvConverter || {};
         var csvContent = "data:text/csv;charset=utf-8," + escape(csvString);
         var link = document.createElement("a");
         link.setAttribute("href", csvContent);
-        link.setAttribute("download", "download.csv");
+        link.setAttribute("download", fileName);
         document.body.appendChild(link);
         link.click();
-        return window.open(csvContent);
+        return true;
       }
     }
   }

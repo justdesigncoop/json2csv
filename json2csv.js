@@ -48,17 +48,16 @@ csvConverter = csvConverter || {};
     },
 
     open: function(csvString, fileName) {
+      var blob = new Blob([csvString], {
+        type: "text/csv;charset=utf-8;"
+      });
       if (Object.hasOwnProperty.call(window, "ActiveXObject") && !window.ActiveXObject) 
       {  // Determine if client is IE11
-        var blob = new Blob([csvString], {
-          type: "text/csv;charset=utf-8;"
-        });
         return window.navigator.msSaveBlob(blob, "tcm-01.csv");
       } 
       else {
-        var csvContent = "data:text/csv;charset=utf-8," + escape(csvString);
         var link = document.createElement("a");
-        link.setAttribute("href", csvContent);
+        link.setAttribute("href", window.URL.createObjectURL(blob));
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
         link.click();
